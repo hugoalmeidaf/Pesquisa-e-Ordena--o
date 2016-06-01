@@ -18,6 +18,11 @@ public class Promissoria {
 			   this.Pago;
 	}
 	
+	public String resumo(){
+		return     this.Vencimento + ";" + 
+				   this.Valor + ";" + 
+				   this.Nome;
+	}
 	public LocalDate getChave(){
 		return this.Vencimento;
 	}
