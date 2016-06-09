@@ -4,16 +4,23 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import estruturas.Lista;
+import estruturas.No;
+import estruturas.Promissoria;
+import utilitarios.Arquivo;
+import utilitarios.Data;
 
 public class Tabela {
 
-	private String localArquivos = "arquivos/";
 	private Promissoria[] vetor;
 	private int nElem;
 
-	public Tabela(int tamanho) { 
+	public Tabela() {
+		this.vetor = null;
+		this.nElem = 0;
+	}
+
+	public Tabela(int tamanho) {
 		this.vetor = new Promissoria[tamanho];
 		this.nElem = 0;
 	}
@@ -26,15 +33,15 @@ public class Tabela {
 			return true;
 		}
 	}
-	
-	public int getnElem(){
+
+	public int getnElem() {
 		return this.nElem;
 	}
-	
-	public Promissoria getElemVetor(int pos){
+
+	public Promissoria getElemVetor(int pos) {
 		return this.vetor[pos];
 	}
-	
+
 	public void QuickSort() {
 		Ordena(0, this.nElem - 1);
 	}
@@ -45,9 +52,9 @@ public class Tabela {
 		Promissoria temp;
 		pivo = this.vetor[(i + j) / 2].getChave();
 		do {
-			while (this.vetor[i].getChave().compareTo(pivo) < 0)
+			while (Data.Comparar(this.vetor[i].getChave(), pivo) < 0)
 				i++;
-			while (this.vetor[j].getChave().compareTo(pivo) > 0)
+			while (Data.Comparar(this.vetor[j].getChave(), pivo) > 0)
 				j--;
 			if (i <= j) {
 				temp = this.vetor[i];
@@ -64,14 +71,13 @@ public class Tabela {
 	}
 
 	public Lista pesqBinaria(LocalDate chave) {
-		int meio, esq, dir;
-		esq = 0;
-		dir = this.nElem - 1;
+		int meio, esq = 0, dir = this.nElem - 1;
+
 		LocalDate dataTemp;
 		while (esq <= dir) {
 			meio = (esq + dir) / 2;
 			dataTemp = this.vetor[meio].getChave();
-			if (chave.compareTo(dataTemp) == 0) {
+			if (Data.Comparar(chave, dataTemp) == 0) {
 				Lista resultado = new Lista();
 				resultado.insere(this.vetor[meio]);
 
@@ -79,7 +85,7 @@ public class Tabela {
 				for (int i = meio - 1; i > esq; i--) {
 					dataTemp = this.vetor[i].getChave();
 
-					if (chave.compareTo(dataTemp) == 0) {
+					if (Data.Comparar(chave, dataTemp) == 0) {
 						resultado.insere(this.vetor[i]);
 					} else {
 						break;
@@ -90,7 +96,7 @@ public class Tabela {
 				for (int i = meio + 1; i < dir; i++) {
 					dataTemp = this.vetor[i].getChave();
 
-					if (chave.compareTo(dataTemp) == 0) {
+					if (Data.Comparar(chave, dataTemp) == 0) {
 						resultado.insere(this.vetor[i]);
 					} else {
 						break;
@@ -100,7 +106,7 @@ public class Tabela {
 				return resultado;
 
 			} else {
-				if (chave.compareTo(dataTemp) < 0)
+				if (Data.Comparar(chave, dataTemp) < 0)
 					dir = meio - 1;
 				else
 					esq = meio + 1;
@@ -108,9 +114,9 @@ public class Tabela {
 		}
 		return null;
 	}
-	
+
 	public void Salvar(String nomeArquivo) {
-		File arquivo = new File(localArquivos + nomeArquivo);
+		File arquivo = Arquivo.Novo(nomeArquivo);
 		try {
 			FileWriter writer = new FileWriter(arquivo);
 			for (int i = 0; i < this.nElem; i++) {
@@ -122,4 +128,97 @@ public class Tabela {
 			e.printStackTrace();
 		}
 	}
+
+	public void Carregar(String nomeArquivo) {
+		try {
+			String[] linhas = Arquivo.LerLinhas(nomeArquivo);
+			
+			this.vetor = new Promissoria[linhas.length];
+			this.nElem = 0;
+
+			for (int i = 0; i < linhas.length; i++) {
+				String[] valores = linhas[i].split(";");
+				Promissoria p = new Promissoria();
+
+				p.Vencimento = Data.Converter(valores[0]);
+				p.Nome = valores[1];
+				p.CPF = valores[2];
+				p.Valor = Double.parseDouble(valores[3]);
+				p.Pago = Boolean.parseBoolean(valores[4]);
+
+				this.inserir(p);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void PesquisarDatas(Boolean mostrarResultado) {
+		try {
+			File arquivo = Arquivo.Novo("resultado.txt");
+			FileWriter writer = new FileWriter(arquivo);
+			String[] linhas = Arquivo.LerLinhas("data.txt");
+
+			LocalDate data;
+			for (int i = 0; i < linhas.length; i++) {
+				data = Data.Converter(linhas[i]);
+				Lista resultado =  this.pesqBinaria(data);
+				if (resultado != null) {
+					writer.write("---------");
+					writer.write(System.lineSeparator());
+
+					Lista pagas = resultado.pesquisaPagas();
+					Lista naoPagas = resultado.pesquisaNaoPagas();
+					double total = 0;
+
+					if (pagas.getPrimeiro() != null) {
+						No no = pagas.getPrimeiro();
+						writer.write("Paga");
+						writer.write(System.lineSeparator());
+						do {
+							writer.write(no.getPromissoria().resumo());
+							writer.write(System.lineSeparator());
+							no = no.getProx();
+						} while (no != null);
+					}
+
+					if (naoPagas.getPrimeiro() != null) {
+						No no = naoPagas.getPrimeiro();
+						writer.write("Não paga");
+						writer.write(System.lineSeparator());
+						do {
+							total += no.getPromissoria().Valor;
+							writer.write(no.getPromissoria().resumo());
+							writer.write(System.lineSeparator());
+							no = no.getProx();
+						} while (no != null);
+					}
+
+					writer.write("Total não paga: ");
+					writer.write(String.valueOf(total));
+					writer.write(System.lineSeparator());
+					writer.write("---------");
+					writer.write(System.lineSeparator());
+				} else {
+					writer.write(data.toString());
+					writer.write(": NÃO HÁ PROMISSÓRIA NA DATA MENCIONADA");
+					writer.write(System.lineSeparator());
+				}
+			}
+
+			writer.close();
+			
+			if (mostrarResultado) {
+				Arquivo.Abrir(arquivo);
+			}
+			
+		} catch (
+
+		IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

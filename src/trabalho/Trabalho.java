@@ -2,34 +2,39 @@ package trabalho;
 
 import java.util.stream.LongStream;
 
+import estruturas.Promissoria;
+import utilitarios.Arquivo;
+import utilitarios.Data;
+
 public class Trabalho {
 
 	public static void main(String[] args) {
-		// Lista();
-		Arvore();
+		System.out.println("---- TABELA USANDO QUICKSORT ----");
+		Lista();
+		System.out.println("---- ABB ----");
+		ABB();
+		System.out.println("---- AVL ----");
+		AVL();
+		System.out.println("---- TABELA USANDO HASHING----");
+		Hashing();
 	}
 
 	public static void Lista() {
 
 		int qtdVezes = 5;
 		long[] tempos = new long[qtdVezes];
-		String[] arquivos = { "aquecimento.txt", "promissoria500alea.txt", "promissoria500inv.txt",
-				"promissoria500ord.txt", "promissoria1000alea.txt", "promissoria1000inv.txt", "promissoria1000ord.txt",
-				"promissoria5000alea.txt", "promissoria5000inv.txt", "promissoria5000ord.txt",
-				"promissoria10000alea.txt", "promissoria10000inv.txt", "promissoria10000ord.txt",
-				"promissoria50000alea.txt", "promissoria50000inv.txt", "promissoria50000ord.txt" };
 
-		for (String arquivo : arquivos) {
+		for (String arquivo : Arquivo.arquivos) {
 			System.out.println("Arquivo: " + arquivo + " ------------");
 
 			for (int i = 0; i < qtdVezes; i++) {
 				long tempoInicio = System.currentTimeMillis();
 
-				PromissoriaLista lista = new PromissoriaLista();
+				Tabela lista = new Tabela();
 				lista.Carregar(arquivo);
-				lista.tabela.QuickSort();
-				lista.tabela.Salvar("quicksort.txt");
-				lista.PesquisarDatas();
+				lista.QuickSort();
+				lista.Salvar("quicksort.txt");
+				lista.PesquisarDatas(false);
 
 				tempos[i] = System.currentTimeMillis() - tempoInicio;
 			}
@@ -41,27 +46,92 @@ public class Trabalho {
 		}
 	}
 
-	public static void Arvore() {
-		int qtdVezes = 1;
+	public static void ABB() {
+		int qtdVezes = 5;
 		long[] tempos = new long[qtdVezes];
-		String[] arquivos = { "promissoria50000inv.txt" };
 
-		for (String arquivo : arquivos) {
+		for (String arquivo : Arquivo.arquivos) {
 			System.out.println("Arquivo: " + arquivo + " ------------");
 
 			for (int i = 0; i < qtdVezes; i++) {
 				long tempoInicio = System.currentTimeMillis();
 
-				PromissoriaArvore arvore = new PromissoriaArvore();
+				ABB arvore = new ABB();
+				try {
+					String[] linhas = Arquivo.LerLinhas(arquivo);
+
+					for (int j = 0; j < linhas.length; j++) {
+						String[] valores = linhas[j].split(";");
+
+						Promissoria p = new Promissoria();
+						p.Vencimento = Data.Converter(valores[0]);
+						p.Nome = valores[1];
+						p.CPF = valores[2];
+						p.Valor = Double.parseDouble(valores[3]);
+						p.Pago = Boolean.parseBoolean(valores[4]);
+
+						arvore.insere(p);
+
+						if (j % 10000 == 0) {
+							arvore = arvore.ArvoreBalanceada(arvore.CamCentral());
+						}
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				arvore.PesquisarDatas(false);
+				// arvore.Mostra();
+
+				tempos[i] = System.currentTimeMillis() - tempoInicio;
+			}
+
+			long soma = LongStream.of(tempos).sum();
+
+			System.out.println("Media tempo: " + soma / qtdVezes + " ms");
+			System.out.println("-------------------");
+		}
+	}
+
+	public static void AVL() {
+		int qtdVezes = 5;
+		long[] tempos = new long[qtdVezes];
+
+		for (String arquivo : Arquivo.arquivos) {
+			System.out.println("Arquivo: " + arquivo + " ------------");
+
+			for (int i = 0; i < qtdVezes; i++) {
+				long tempoInicio = System.currentTimeMillis();
+
+				AVL arvore = new AVL();
 				arvore.Carregar(arquivo);
 				arvore = arvore.ArvoreBalanceada(arvore.CamCentral());
-			    arvore.PesquisarDatas();
-				//arvore.Mostra();
+				arvore.PesquisarDatas(false);
+				tempos[i] = System.currentTimeMillis() - tempoInicio;
+			}
 
-				// lista.QuickSort();
-				// lista.Salvar("quicksort.txt");
-				// lista.PesquisarDatas();
-				//
+			long soma = LongStream.of(tempos).sum();
+
+			System.out.println("Media tempo: " + soma / qtdVezes + " ms");
+			System.out.println("-------------------");
+		}
+	}
+
+	public static void Hashing() {
+
+		int qtdVezes = 5;
+		long[] tempos = new long[qtdVezes];
+
+		for (String arquivo : Arquivo.arquivos) {
+			System.out.println("Arquivo: " + arquivo + " ------------");
+
+			for (int i = 0; i < qtdVezes; i++) {
+				long tempoInicio = System.currentTimeMillis();
+
+				TabelaHashing hashing = new TabelaHashing();
+				hashing.Carregar(arquivo);
+				hashing.PesquisarDatas(false);
+
 				tempos[i] = System.currentTimeMillis() - tempoInicio;
 			}
 
