@@ -1,0 +1,35 @@
+package trabalho;
+
+public class NoArvore {
+	private Lista promissorias;
+	private NoArvore dir, esq;
+
+	public NoArvore(Promissoria _info) {
+		this.promissorias = new Lista();
+		this.promissorias.insere(_info);
+	}
+
+	public NoArvore getDir() {
+		return dir;
+	}
+
+	public void setDir(NoArvore dir) {
+		this.dir = dir;
+	}
+
+	public NoArvore getEsq() {
+		return esq;
+	}
+
+	public void setEsq(NoArvore esq) {
+		this.esq = esq;
+	}
+
+	public Promissoria getPromissoria() {
+		return promissoria;
+	}
+
+	public void setInfo(Promissoria novo) {
+		this.promissoria = novo;
+	}
+}

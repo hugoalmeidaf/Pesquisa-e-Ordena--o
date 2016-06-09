@@ -1,0 +1,21 @@
+package trabalho;
+
+public class Tabela {
+
+	private Promissoria[] vetor;
+	private int nElem;
+
+	public Tabela(int tamanho) { 
+		this.vetor = new vetor[tamanho];
+		this.nElem = 0;
+	}
+
+	public boolean inserir(Promissoria elemento) {
+		if (this.nElem == this.vetor.length)
+			return false;
+		else {
+			this.vetor[this.nElem++] = elemento;
+			return true;
+		}
+	}
+}

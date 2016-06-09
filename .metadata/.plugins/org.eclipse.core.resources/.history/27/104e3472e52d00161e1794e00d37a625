@@ -1,0 +1,159 @@
+package trabalho;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+
+import estruturas.Lista;
+import estruturas.No;
+import estruturas.Promissoria;
+import utilitarios.Arquivo;
+import utilitarios.Data;
+import utilitarios.Numero;
+
+public class TabelaHashing {
+	private Lista[] vetor;
+
+	public TabelaHashing() {
+		this.vetor = null;
+	}
+
+	private int calculaTamanho(int qtd) {
+		int tamanho = qtd + 1;
+		while (!Numero.ÈPrimo(tamanho)) {
+			tamanho++;
+		}
+
+		return tamanho;
+	}
+
+	public void Carregar(String nomeArquivo) {
+		try {
+			String[] linhas = Arquivo.LerLinhas(nomeArquivo);
+
+			this.vetor = new Lista[calculaTamanho(linhas.length)];
+
+			for (int i = 0; i < linhas.length; i++) {
+				String[] valores = linhas[i].split(";");
+				Promissoria p = new Promissoria();
+
+				p.Vencimento = Data.Converter(valores[0]);
+				p.Nome = valores[1];
+				p.CPF = valores[2];
+				p.Valor = Double.parseDouble(valores[3]);
+				p.Pago = Boolean.parseBoolean(valores[4]);
+
+				int pos = Hashing(p.Vencimento);
+				Lista lista = vetor[pos];
+				if (lista == null) {
+					lista = new Lista();
+				}
+
+				lista.insere(p);
+				vetor[pos] = lista;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void Mostrar() {
+		for (int i = 0; i < vetor.length; i++) {
+			if (vetor[i] != null)
+				vetor[i].Resumo();
+		}
+	}
+
+	public int Hashing(LocalDate chave) {
+		int chaveInteiro = Data.Inteiro(chave);
+		return chaveInteiro % vetor.length;
+	}
+
+	public Lista pesquisa(LocalDate chave) {
+		int pos = this.Hashing(chave);
+		Lista resultado = new Lista();
+		if (vetor[pos] != null) {
+			No no = vetor[pos].getPrimeiro();
+			while (no != null) {
+				if (no.getPromissoria().getChave().compareTo(chave) == 0) {
+					resultado.insere(no.getPromissoria());
+				}
+				no = no.getProx();
+			}
+
+			return resultado;
+		}
+
+		return null;
+	}
+	
+	public void PesquisarDatas(Boolean mostrarResultado) {
+		try {
+			File arquivo = Arquivo.Novo("resultado.txt");
+			FileWriter writer = new FileWriter(arquivo);
+			String[] linhas = Arquivo.LerLinhas("data.txt");
+
+			LocalDate data;
+			for (int i = 0; i < linhas.length; i++) {
+				data = Data.Converter(linhas[i]);
+				Lista resultado =  this.pesquisa(chave)(data);
+				if (resultado != null) {
+					writer.write("---------");
+					writer.write(System.lineSeparator());
+
+					Lista pagas = resultado.pesquisaPagas();
+					Lista naoPagas = resultado.pesquisaNaoPagas();
+					double total = 0;
+
+					if (pagas.getPrimeiro() != null) {
+						No no = pagas.getPrimeiro();
+						writer.write("Paga");
+						writer.write(System.lineSeparator());
+						do {
+							writer.write(no.getPromissoria().resumo());
+							writer.write(System.lineSeparator());
+							no = no.getProx();
+						} while (no != null);
+					}
+
+					if (naoPagas.getPrimeiro() != null) {
+						No no = naoPagas.getPrimeiro();
+						writer.write("N„o paga");
+						writer.write(System.lineSeparator());
+						do {
+							total += no.getPromissoria().Valor;
+							writer.write(no.getPromissoria().resumo());
+							writer.write(System.lineSeparator());
+							no = no.getProx();
+						} while (no != null);
+					}
+
+					writer.write("Total n„o paga: ");
+					writer.write(String.valueOf(total));
+					writer.write(System.lineSeparator());
+					writer.write("---------");
+					writer.write(System.lineSeparator());
+				} else {
+					writer.write(data.toString());
+					writer.write(": N√O H¡ PROMISS”RIA NA DATA MENCIONADA");
+					writer.write(System.lineSeparator());
+				}
+			}
+
+			writer.close();
+			
+			if (mostrarResultado) {
+				Arquivo.Abrir(arquivo);
+			}
+			
+		} catch (
+
+		IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}

@@ -1,0 +1,41 @@
+package estruturas;
+
+public class Nodo {
+	private Lista promissorias;
+	private Nodo esq, dir;
+	private byte fatorBalanceamento;
+
+	Nodo(Promissoria _info) {
+		this.promissorias = new Lista();
+		this.promissorias.insere(_info);
+		this.fatorBalanceamento = 0;
+	}
+
+	public Nodo getDir() {
+		return this.dir;
+	}
+
+	public void setDir(Nodo dir) {
+		this.dir = dir;
+	}
+
+	public Nodo getEsq() {
+		return this.esq;
+	}
+
+	public void setEsq(Nodo esq) {
+		this.esq = esq;
+	}
+
+	public byte getFatorBalanceamento() {
+		return this.fatorBalanceamento;
+	}
+
+	public void setFatorBalanceamento(byte fatorBalanceamento) {
+		this.fatorBalanceamento = fatorBalanceamento;
+	}
+
+	public Item getInfo() {
+		return this.info;
+	}
+}

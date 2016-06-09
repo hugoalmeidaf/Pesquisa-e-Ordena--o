@@ -1,0 +1,24 @@
+package utilitarios;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class Data {
+	private static DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+	public static LocalDate Converter(String data) {
+		return LocalDate.parse(data, formatoData);
+	}
+
+	public static int Comparar(LocalDate data1, LocalDate data2) {
+		return data1.compareTo(data2);
+	}
+
+	public static long Inteiro(LocalDate data) {
+		long dia = data.getDayOfMonth() * 1000000;
+		long mes = data.getMonthValue() * 1000;
+		long ano = data.getYear();
+
+		return dia + mes + ano;
+	}
+}

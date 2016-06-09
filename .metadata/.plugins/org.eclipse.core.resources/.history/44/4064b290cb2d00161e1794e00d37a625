@@ -1,0 +1,13 @@
+package trabalho;
+
+import estruturas.Nodo;
+
+public class PromissoriaAVL {
+	private Nodoo raiz;
+	private boolean h;
+
+	public ArvoreAVL(){
+	 this.raiz = null;
+	 this.h = true;
+	 }
+}

@@ -1,0 +1,9 @@
+package utilitarios;
+
+import java.io.File;
+
+public class Arquivo {
+	public static void Abrir(File arquivo) {
+
+	}
+}

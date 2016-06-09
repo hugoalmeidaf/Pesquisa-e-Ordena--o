@@ -1,0 +1,22 @@
+package trabalho;
+
+public class No {
+	private Promissoria info;
+	private No prox;
+
+	public No(Promissoria _info) {
+		this.info = _info; 
+	}
+
+	public Promisssoria getPromissoria(){
+		
+	}
+	
+	public No getProx() {
+		return this.prox;
+	}
+
+	public void setProx(No novo) {
+		this.prox = novo;
+	}
+}

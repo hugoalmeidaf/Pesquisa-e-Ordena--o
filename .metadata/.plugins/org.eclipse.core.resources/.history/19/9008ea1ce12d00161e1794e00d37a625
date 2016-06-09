@@ -1,0 +1,61 @@
+package trabalho;
+
+import java.time.LocalDate;
+
+import estruturas.Promissoria;
+import utilitarios.Arquivo;
+import utilitarios.Data;
+import utilitarios.Numero;
+
+public class TabelaHashing {
+	private Promissoria[] vetor;
+	private int nElem;
+
+	public TabelaHashing() {
+		this.vetor = null;
+		this.nElem = 0;
+	}
+
+	private int calculaTamanho(int qtd) {
+		int tamanho = qtd + 1;
+		while (!Numero.ÈPrimo(tamanho)) {
+			tamanho++;
+		}
+
+		return tamanho;
+	}
+
+	public void Carregar(String nomeArquivo) {
+		try {
+			String[] linhas = Arquivo.LerLinhas(nomeArquivo);
+
+			this.vetor = new Promissoria[calculaTamanho(linhas.length)];
+			this.nElem = 0;
+
+			for (int i = 0; i < linhas.length; i++) {
+				String[] valores = linhas[i].split(";");
+				Promissoria p = new Promissoria();
+
+				p.Vencimento = Data.Converter(valores[0]);
+				p.Nome = valores[1];
+				p.CPF = valores[2];
+				p.Valor = Double.parseDouble(valores[3]);
+				p.Pago = Boolean.parseBoolean(valores[4]);
+
+				this.inserir(p);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public int Hashing(LocalDate chave, int M) {
+		//22/06/2000
+		//2200000000
+		int inteiro = chave.getDayOfMonth() * 100000000 + chave.getMonthValue() * 1000 + chave.getYear()();
+		
+		return chave / M;
+	}
+
+}

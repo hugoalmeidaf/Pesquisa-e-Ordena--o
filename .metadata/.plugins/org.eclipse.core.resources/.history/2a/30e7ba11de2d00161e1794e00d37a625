@@ -1,0 +1,19 @@
+package trabalho;
+
+import estruturas.Promissoria;
+
+public class TabelaHashing {
+	private Promissoria[] vetor;
+	private int nElem;
+
+	public TabelaHashing() {
+		this.vetor = null;
+		this.nElem = 0;
+	}
+	
+	private int calculaTamanho(){
+		
+		return 0
+	}
+
+}

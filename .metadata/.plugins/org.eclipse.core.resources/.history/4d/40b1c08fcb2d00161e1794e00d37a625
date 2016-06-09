@@ -1,0 +1,11 @@
+package trabalho;
+
+public class PromissoriaAVL {
+	private Nodo raiz;
+	private boolean h;
+
+	public ArvoreAVL(){
+	 this.raiz = null;
+	 this.h = true;
+	 }
+}

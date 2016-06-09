@@ -1,0 +1,24 @@
+package utilitarios;
+
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+
+public class Arquivo {
+	public static String localArquivos = "arquivos/";
+	
+	public static void Abrir(File arquivo) {
+		try {
+			if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().edit(arquivo);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public String[] LerLinhas(String NomeArquivo){
+		
+	}
+}

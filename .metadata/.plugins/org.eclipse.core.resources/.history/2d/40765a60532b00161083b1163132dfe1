@@ -1,0 +1,121 @@
+package trabalho;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Tabela {
+
+	private String localArquivos = "arquivos/";
+	private Promissoria[] vetor;
+	private int nElem;
+
+	public Tabela(int tamanho) { 
+		this.vetor = new Promissoria[tamanho];
+		this.nElem = tamanho;
+	}
+
+	public boolean inserir(Promissoria elemento) {
+		if (this.nElem == this.vetor.length)
+			return false;
+		else {
+			this.vetor[this.nElem++] = elemento;
+			return true;
+		}
+	}
+	
+	public void QuickSort() {
+		Ordena(0, this.nElem - 1);
+	}
+
+	private void Ordena(int esq, int dir) {
+		int i = esq, j = dir;
+		LocalDate pivo;
+		Promissoria temp;
+		pivo = this.vetor[(i + j) / 2].getChave();
+		do {
+			while (this.vetor[i].getChave().compareTo(pivo) < 0)
+				i++;
+			while (this.vetor[j].getChave().compareTo(pivo) > 0)
+				j--;
+			if (i <= j) {
+				temp = this.vetor[i];
+				this.vetor[i] = this.vetor[j];
+				this.vetor[j] = temp;
+				i++;
+				j--;
+			}
+		} while (i <= j);
+		if (esq < j)
+			Ordena(esq, j);
+		if (dir > i)
+			Ordena(i, dir);
+	}
+
+	public Promissoria[] pesqBinaria(LocalDate chave) {
+		int meio, esq, dir;
+		esq = 0;
+		dir = this.nElem - 1;
+		LocalDate dataTemp;
+		while (esq <= dir) {
+			meio = (esq + dir) / 2;
+			dataTemp = this.promissoria[meio].getChave();
+			if (chave.compareTo(dataTemp) == 0) {
+				List<Promissoria> resultado = new ArrayList<Promissoria>();
+				resultado.add(this.promissoria[meio]);
+
+				// VERIFICANDO SE NA ESQUERDA NÃO HÁ UMA CHAVE IGUAL
+				for (int i = meio - 1; i > esq; i--) {
+					dataTemp = this.promissoria[i].getChave();
+
+					if (chave.compareTo(dataTemp) == 0) {
+						resultado.add(this.promissoria[i]);
+					} else {
+						break;
+					}
+				}
+
+				// VERIFICANDO SE NA DIREITA NÃO HÁ UMA CHAVE IGUAL
+				for (int i = meio + 1; i < dir; i++) {
+					dataTemp = this.promissoria[i].getChave();
+
+					if (chave.compareTo(dataTemp) == 0) {
+						resultado.add(this.promissoria[i]);
+					} else {
+						break;
+					}
+				}
+
+				return resultado;
+
+			} else {
+				if (chave.compareTo(dataTemp) < 0)
+					dir = meio - 1;
+				else
+					esq = meio + 1;
+			}
+		}
+		return null;
+	}
+	
+	public void Salvar(String nomeArquivo) {
+		File arquivo = new File(localArquivos + nomeArquivo);
+		try {
+			FileWriter writer = new FileWriter(arquivo);
+			for (int i = 0; i < this.nElem; i++) {
+				writer.write(vetor[i].toString());
+				writer.write(System.lineSeparator());
+			}
+			writer.close();
+
+			// AbrirArquivo(arquivo);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

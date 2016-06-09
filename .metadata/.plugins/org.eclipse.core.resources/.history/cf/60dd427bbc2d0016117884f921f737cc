@@ -1,0 +1,7 @@
+package utilitarios;
+
+public class Arquivo {
+public static Abrir(){
+	
+}
+}

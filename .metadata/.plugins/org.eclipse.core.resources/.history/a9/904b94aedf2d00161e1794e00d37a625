@@ -1,0 +1,23 @@
+package trabalho;
+
+import estruturas.Promissoria;
+import utilitarios.Numero;
+
+public class TabelaHashing {
+	private Promissoria[] vetor;
+	private int nElem;
+
+	public TabelaHashing() {
+		this.vetor = null;
+		this.nElem = 0;
+	}
+
+	private int calculaTamanho(int qtd) {
+		int tamanho = qtd + 1;
+		while (!Numero.ÈPrimo(tamanho)) {
+			tamanho++;			
+		}
+		
+		return tamanho;
+	}
+}

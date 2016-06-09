@@ -1,0 +1,9 @@
+package utilitarios;
+
+import java.time.LocalDate;
+
+public class Data {
+	public static LocalDate Converter(String data) {
+
+	}
+}

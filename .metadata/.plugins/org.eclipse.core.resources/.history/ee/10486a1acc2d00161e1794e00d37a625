@@ -1,0 +1,41 @@
+package trabalho;
+
+import estruturas.Nodo;
+import estruturas.Promissoria;
+import utilitarios.Data;
+
+public class PromissoriaAVL {
+	private Nodo raiz;
+	private boolean h;
+
+	public PromissoriaAVL() {
+		this.raiz = null;
+		this.h = true;
+	}
+
+	public void insereRaiz(Promissoria elem) {
+		this.raiz = this.insere(elem, this.raiz);
+	}
+
+	private Nodo insere(Promissoria elem, Nodo no) {
+		if (no == null) {
+			Nodo novo = new Nodo(elem);
+			this.h = true;
+			return novo;
+		} else {
+			if (Data.Comparar(elem.getChave(), no.getPromissoria().getChave()) < 0) {
+				// Insere à esquerda e verifica se precisa balancear à direita
+				no.setEsq(this.insere(elem, no.getEsq()));
+				no = this.balancearDir(no);
+				return no;
+			} else if (Data.Comparar(elem.getChave(), no.getPromissoria().getChave()) > 0){
+				// Insere à direita e verifica se precisa balancear à esquerda
+				no.setDir(this.insere(elem, no.getDir()));
+				no = this.balancearEsq(no);
+				return no;
+			}else{
+				
+			}
+		}
+	}
+}

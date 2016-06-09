@@ -1,0 +1,12 @@
+package utilitarios;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class Data {
+	private static DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	
+	public static LocalDate Converter(String data) {
+		LocalDate.parse(valores[0], formatoData);
+	}
+}

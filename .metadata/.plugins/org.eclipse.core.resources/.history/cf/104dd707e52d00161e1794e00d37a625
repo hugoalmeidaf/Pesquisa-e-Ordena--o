@@ -1,0 +1,84 @@
+package trabalho;
+
+import java.time.LocalDate;
+
+import estruturas.Lista;
+import estruturas.Promissoria;
+import utilitarios.Arquivo;
+import utilitarios.Data;
+import utilitarios.Numero;
+
+public class TabelaHashing {
+	private Lista[] vetor;
+
+	public TabelaHashing() {
+		this.vetor = null;
+	}
+
+	private int calculaTamanho(int qtd) {
+		int tamanho = qtd + 1;
+		while (!Numero.ÈPrimo(tamanho)) {
+			tamanho++;
+		}
+
+		return tamanho;
+	}
+
+	public void Carregar(String nomeArquivo) {
+		try {
+			String[] linhas = Arquivo.LerLinhas(nomeArquivo);
+
+			this.vetor = new Lista[calculaTamanho(linhas.length)];
+
+			for (int i = 0; i < linhas.length; i++) {
+				String[] valores = linhas[i].split(";");
+				Promissoria p = new Promissoria();
+
+				p.Vencimento = Data.Converter(valores[0]);
+				p.Nome = valores[1];
+				p.CPF = valores[2];
+				p.Valor = Double.parseDouble(valores[3]);
+				p.Pago = Boolean.parseBoolean(valores[4]);
+
+				int pos = Hashing(p.Vencimento);
+				Lista lista = vetor[pos];
+				if (lista == null) {
+					lista = new Lista();
+				}
+
+				lista.insere(p);
+				vetor[pos] = lista;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void Mostrar() {
+		for (int i = 0; i < vetor.length; i++) {
+			if (vetor[i] != null)
+				vetor[i].Resumo();
+		}
+	}
+
+	public int Hashing(LocalDate chave) {
+		int chaveInteiro = Data.Inteiro(chave);
+		return chaveInteiro % vetor.length;
+	}
+
+	public Lista pesquisa(LocalDate chave) {
+		int pos = this.Hashing(chave);
+		Lista resultado = new Lista();
+		if(vetor[pos] != null){
+		No no = vetor
+		while (en.hasMoreElements()) {
+			type type = (type) en.nextElement();
+			
+		}
+		}
+	
+		return null;
+	}
+
+}

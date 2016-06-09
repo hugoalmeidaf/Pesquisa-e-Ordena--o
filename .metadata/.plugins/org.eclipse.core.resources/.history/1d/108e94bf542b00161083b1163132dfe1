@@ -1,0 +1,27 @@
+package trabalho;
+
+public class Lista {
+	private No prim;
+
+	public Lista() {
+		this.prim = null;
+	}
+
+	public void insere(Promissoria elem) {
+		No novoNo = new No(elem);
+		novoNo.setProx(this.prim);
+		this.prim = novoNo;
+	}
+	
+	public Lista pesquisaPagas(){
+		Lista pagas = new Lista();
+		 No ant = this.prim; 
+		while(){
+			
+		}
+	}
+	
+	public No percorrer(){
+		
+	}
+}

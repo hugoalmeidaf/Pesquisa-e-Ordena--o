@@ -1,0 +1,44 @@
+package trabalho;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class Tabela {
+
+	private String localArquivos = "arquivos/";
+	private Promissoria[] vetor;
+	private int nElem;
+
+	public Tabela(int tamanho) { 
+		this.vetor = new Promissoria[tamanho];
+		this.nElem = 0;
+	}
+
+	public boolean inserir(Promissoria elemento) {
+		if (this.nElem == this.vetor.length)
+			return false;
+		else {
+			this.vetor[this.nElem++] = elemento;
+			return true;
+		}
+	}
+	
+	public void Salvar(String nomeArquivo) {
+		File arquivo = new File(localArquivos + nomeArquivo);
+		try {
+			FileWriter writer = new FileWriter(arquivo);
+			for (int i = 0; i < tabela.; i++) {
+				writer.write(promissoria[i].toString());
+				writer.write(System.lineSeparator());
+			}
+			writer.close();
+
+			// AbrirArquivo(arquivo);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

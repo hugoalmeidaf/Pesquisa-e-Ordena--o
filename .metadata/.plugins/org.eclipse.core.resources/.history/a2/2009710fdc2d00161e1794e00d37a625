@@ -1,0 +1,311 @@
+package trabalho;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+
+import estruturas.Lista;
+import estruturas.No;
+import estruturas.NoArvore;
+import estruturas.Nodo;
+import estruturas.Promissoria;
+import utilitarios.Arquivo;
+import utilitarios.Data;
+
+public class AVL {
+	private Nodo raiz;
+	private boolean h;
+	private int nElem;
+	public AVL() {
+		this.raiz = null;
+		this.h = true;
+	}
+
+	public void insereRaiz(Promissoria elem) {
+		this.raiz = this.insere(elem, this.raiz);
+	}
+
+	private Nodo insere(Promissoria elem, Nodo no) {
+		if (no == null) {
+			Nodo novo = new Nodo(elem);
+			this.h = true;
+			return novo;
+		} else {
+			if (Data.Comparar(elem.getChave(), no.getPromissoria().getChave()) < 0) {
+				// Insere à esquerda e verifica se precisa balancear à direita
+				no.setEsq(this.insere(elem, no.getEsq()));
+				no = this.balancearDir(no);
+				return no;
+			} else if (Data.Comparar(elem.getChave(), no.getPromissoria().getChave()) > 0) {
+				// Insere à direita e verifica se precisa balancear à esquerda
+				no.setDir(this.insere(elem, no.getDir()));
+				no = this.balancearEsq(no);
+				return no;
+			} else {
+				// Insere no mesmo nó se for igual
+				no.insere(elem);
+				return no;
+			}
+		}
+	}
+
+	private Nodo balancearDir(Nodo no) {
+		if (this.h)
+			switch (no.getFatorBalanceamento()) {
+			case 1:
+				no.setFatorBalanceamento((byte) 0);
+				this.h = false;
+				break;
+			case 0:
+				no.setFatorBalanceamento((byte) -1);
+				break;
+			case -1:
+				no = this.rotaçãoDireita(no);
+			}
+		return no;
+	}
+
+	private Nodo balancearEsq(Nodo no) {
+		if (this.h)
+			switch (no.getFatorBalanceamento()) {
+			case -1:
+				no.setFatorBalanceamento((byte) 0);
+				this.h = false;
+				break;
+			case 0:
+				no.setFatorBalanceamento((byte) 1);
+				break;
+			case 1:
+				no = this.rotaçãoEsquerda(no);
+			}
+		return no;
+	}
+
+	private Nodo rotaçãoDireita(Nodo no) {
+		Nodo temp1, temp2;
+		temp1 = no.getEsq();
+		if (temp1.getFatorBalanceamento() == -1) {
+			no.setEsq(temp1.getDir());
+			temp1.setDir(no);
+			no.setFatorBalanceamento((byte) 0);
+			no = temp1;
+		} else {
+			temp2 = temp1.getDir();
+			if (temp2 != null) {
+				temp1.setDir(temp2.getEsq());
+				temp2.setEsq(temp1);
+				no.setEsq(temp2.getDir());
+				temp2.setDir(no);
+				if (temp2.getFatorBalanceamento() == -1)
+					no.setFatorBalanceamento((byte) 1);
+				else
+					no.setFatorBalanceamento((byte) 0);
+				if (temp2.getFatorBalanceamento() == 1)
+					temp1.setFatorBalanceamento((byte) -1);
+				else
+					temp1.setFatorBalanceamento((byte) 0);
+				no = temp2;
+			}
+		}
+		no.setFatorBalanceamento((byte) 0);
+		this.h = false;
+		return no;
+	}
+
+	private Nodo rotaçãoEsquerda(Nodo no) {
+		Nodo temp1, temp2;
+		temp1 = no.getDir();
+		if (temp1.getFatorBalanceamento() == 1) {
+			no.setDir(temp1.getEsq());
+			temp1.setEsq(no);
+			no.setFatorBalanceamento((byte) 0);
+			no = temp1;
+		} else {
+			temp2 = temp1.getEsq();
+			if (temp2 != null) {
+				temp1.setEsq(temp2.getDir());
+				temp2.setDir(temp1);
+				no.setDir(temp2.getEsq());
+				temp2.setEsq(no);
+				if (temp2.getFatorBalanceamento() == 1)
+					no.setFatorBalanceamento((byte) -1);
+				else
+					no.setFatorBalanceamento((byte) 0);
+				if (temp2.getFatorBalanceamento() == -1)
+					temp1.setFatorBalanceamento((byte) 1);
+				else
+					temp1.setFatorBalanceamento((byte) 0);
+				no = temp2;
+			}
+		}
+		no.setFatorBalanceamento((byte) 0);
+		this.h = false;
+		return no;
+	}
+
+	public void Carregar(String nomearquivo) {
+		try {
+			String[] linhas = Arquivo.LerLinhas(nomearquivo);
+
+			for (int j = 0; j < linhas.length; j++) {
+				String[] valores = linhas[j].split(";");
+
+				Promissoria p = new Promissoria();
+				p.Vencimento = Data.Converter(valores[0]);
+				p.Nome = valores[1];
+				p.CPF = valores[2];
+				p.Valor = Double.parseDouble(valores[3]);
+				p.Pago = Boolean.parseBoolean(valores[4]);
+
+				this.insereRaiz(p);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void Mostra() {
+		Mostra(this.raiz);
+	}
+
+	public void Mostra(Nodo no) {
+		if (no != null) {
+			System.out.println(no.getPromissoria().resumo());
+			System.out.println("ESQ");
+			Mostra(no.getEsq());
+			System.out.println("DIR");
+			Mostra(no.getDir());
+		}
+	}
+	
+	public Lista pesquisa(LocalDate data) {
+		Nodo no;
+
+		no = this.pesquisa(data, this.raiz);
+		if (no != null)
+			return no.getLista();
+		else
+			return null;
+	}
+
+	private Nodo pesquisa(LocalDate data, Nodo no) {
+		Nodo temp;
+		temp = no;
+
+		if (temp != null) {
+			if (Data.Comparar(data, temp.getPromissoria().getChave()) < 0)
+				temp = this.pesquisa(data, temp.getEsq());
+			else {
+				if (Data.Comparar(data, temp.getPromissoria().getChave()) > 0)
+					temp = this.pesquisa(data, temp.getDir());
+			}
+		}
+
+		return temp;
+	}
+
+	
+	public void PesquisarDatas() {
+		try {
+			File arquivo = Arquivo.Novo("resultado.txt");
+			FileWriter writer = new FileWriter(arquivo);
+			String[] linhas = Arquivo.LerLinhas("data.txt");
+
+			LocalDate data;
+			for (int i = 0; i < linhas.length; i++) {
+				data = Data.Converter(linhas[i]);
+				Lista resultado = this.pesquisa(data);
+				if (resultado != null) {
+					writer.write("---------");
+					writer.write(System.lineSeparator());
+
+					Lista pagas = resultado.pesquisaPagas();
+					Lista naoPagas = resultado.pesquisaNaoPagas();
+					double total = 0;
+
+					if (pagas.getPrimeiro() != null) {
+						No no = pagas.getPrimeiro();
+						writer.write("Paga");
+						writer.write(System.lineSeparator());
+						do {
+							writer.write(no.getPromissoria().resumo());
+							writer.write(System.lineSeparator());
+							no = no.getProx();
+						} while (no != null);
+					}
+
+					if (naoPagas.getPrimeiro() != null) {
+						No no = naoPagas.getPrimeiro();
+						writer.write("Não paga");
+						writer.write(System.lineSeparator());
+						do {
+							total += no.getPromissoria().Valor;
+							writer.write(no.getPromissoria().resumo());
+							writer.write(System.lineSeparator());
+							no = no.getProx();
+						} while (no != null);
+					}
+
+					writer.write("Total não paga: ");
+					writer.write(String.valueOf(total));
+					writer.write(System.lineSeparator());
+					writer.write("---------");
+					writer.write(System.lineSeparator());
+				} else {
+					writer.write(data.toString());
+					writer.write(": NÃO HÁ PROMISSÓRIA NA DATA MENCIONADA");
+					writer.write(System.lineSeparator());
+				}
+			}
+
+			writer.close();
+
+			Arquivo.Abrir(arquivo);
+
+		} catch (
+
+		IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public Tabela CamCentral() {
+		return (this.FazCamCentral(this.raiz, new Tabela(nElem)));
+	}
+
+	private Tabela FazCamCentral(Nodo arv, Tabela vetOrdenado) {
+		if (arv != null && vetOrdenado != null) {
+			vetOrdenado = this.FazCamCentral(arv.getEsq(), vetOrdenado);
+
+			No no = arv.getLista().getPrimeiro();
+			do {
+				vetOrdenado.inserir(no.getPromissoria());
+				no = no.getProx();
+			} while (no != null);
+
+			vetOrdenado = this.FazCamCentral(arv.getDir(), vetOrdenado);
+		}
+		return vetOrdenado;
+	}
+
+	public ABB ArvoreBalanceada(Tabela vetOrdenado) {
+		ABB temp = new ABB();
+		this.Balancear(vetOrdenado, temp, 0, vetOrdenado.getnElem() - 1);
+		return temp;
+	}
+
+	private void Balancear(Tabela vet, ABB temp, int inic, int fim) {
+		int meio;
+		if (fim >= inic) {
+			meio = (inic + fim) / 2;
+			temp.insere(vet.getElemVetor(meio));
+			this.Balancear(vet, temp, inic, meio - 1);
+			this.Balancear(vet, temp, meio + 1, fim);
+		}
+	}
+
+
+}
